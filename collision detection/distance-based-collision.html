@@ -1,0 +1,162 @@
+<!-- Base Idea:
+This module explores a rather tricky but very mathematical way to calculate distance.
+
+Given two circles, with two seperate radius, refer to diagram 'distance.png' to see how distance between two circles is illustrated with relation to radius.
+
+Basicallly, there is no collision if the distance is equal to the combined radius of the circles. When the distance is larger than the radius, there is also no collision.
+
+However when the distance is less, there is a collision
+
+The distance between two points is given by a formula:
+
+ d=√((x2 – x1)² + (y2 – y1)²).
+
+where x1 is the x position of the first circle and y1 is the y position. The same applies for the second circle with x2 and y2
+
+We mathematically calculate this distance and when it is present, we compare with the combined radius which is simply an addition of both radius of each circle.
+
+if the distance is less than combined radius, there is a collision.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+
+        #test{
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-family: "Work Sans";
+            font-size: 24px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <canvas id="canvas"></canvas>
+    <p id="test"></p>
+
+    <script>
+    const test = document.getElementById('test')
+
+    class Circle {
+            constructor (
+                x,
+                y,
+                radius,
+                color,
+            ) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius
+                this.color = color
+            }
+
+            render (ctx) {
+                ctx.beginPath()
+                ctx.fillStyle = this.color
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.closePath()
+            }
+        }
+
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        
+        const circle0 = new Circle(
+                x = canvas.width / 2,
+                y = canvas.height / 2,
+                radius = 30,
+                color ='black'
+        )
+
+        const circle1 = new Circle(
+                x = canvas.width / 2,
+                y = canvas.height / 2,
+                radius = 30,
+                color = 'grey'
+        )
+
+        let movement = {
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+            movement.x = e.layerX
+            movement.y = e.layerY
+
+            circle1.x = movement.x
+            circle1.y = movement.y
+
+            const dx = circle1.x - circle0.x
+            const dy = circle1.y - circle0.y
+
+            const distance = Math.sqrt(dx * dx + dy * dy)
+            const combinedR = circle0.radius + circle1.radius
+
+            test.textContent = distance < combinedR ? 'Lap' : "Nope"
+        })
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = (ts - oldTime) * 100
+        oldTime = ts
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        circle0.render(ctx)
+        circle1.render(ctx)
+
+        // d=√((x2 – x1)² + (y2 – y1)²). distance between two points
+        // circle0.radius + circle1.radius = combined radius
+            
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+    </script>
+    
+</body>
+</html>

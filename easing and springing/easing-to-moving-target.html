@@ -1,0 +1,97 @@
+<!-- Base Idea:
+
+We determine the easing similarly to the simple easing module, but here, we dynamically calculate the end angle on mouse movement.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        let movement = {
+            x: 0,
+            y: 0
+        }
+
+        let oldTime = 0;
+
+        let startX = canvas.width / 2
+        let startY = canvas.height / 2
+
+        let endX = startX
+        let endY = startY
+
+        canvas.addEventListener('mousemove', (e) => {
+            movement.x = e.layerX
+            movement.y = e.layerY
+        })
+
+        requestAnimationFrame(drawFrame)
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        const speed = dt * 5
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        endX += (movement.x - endX) * speed
+        endY += (movement.y - endY) * speed
+
+        ctx.fillStyle = "#1199fa"
+        ctx.beginPath()
+        ctx.arc(endX, endY, 35, 0, Math.PI * 2, false)
+        ctx.fill()
+
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>

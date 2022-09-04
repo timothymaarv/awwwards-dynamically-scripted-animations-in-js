@@ -1,0 +1,214 @@
+<!-- Base Idea:
+This module explores the idea of distance between objects, we try to figure out through code, if one rectangle overlaps another and display an alert if it does.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+
+        #test{
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            font-family: "Work Sans";
+            font-size: 24px;
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+    
+    <canvas id="canvas"></canvas>
+    <p id="test"></p>
+
+    <script>
+    const FRICTION_CONSTANT = 0.5
+
+    const result = document.getElementById('test')
+
+    class Rectangle {
+            constructor (
+                x,
+                y,
+                width,
+                height,
+                color,
+                velocityX,
+                velocityY,
+                gravity
+            ) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.color = color
+                this.velocityX = velocityX
+                this.velocityY = velocityY
+                this.gravity = gravity
+            }
+
+            update(speed) {
+                this.velocityX *= FRICTION_CONSTANT
+                this.velocityY += this.gravity * speed
+                
+                this.y += this.velocityY * speed
+            }
+
+            render (ctx) {
+                ctx.beginPath()
+                ctx.fillStyle = this.color
+                ctx.fillRect(this.x, this.y, this.width, this.height)
+                ctx.fill()
+                ctx.closePath()
+            }
+        }
+
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        
+        const box0 = new Rectangle(
+                x = canvas.width / 2,
+                y = canvas.height / 2,
+                width = 100,
+                height = 100,
+                color = getRandomColor(),
+                velocityX = 100,
+                velocityY = 10 + Math.random() * 3,
+                gravity = 0.666
+        )
+
+        const box1 = new Rectangle(
+                x = canvas.width / 3,
+                y = canvas.height / 2,
+                width = 100,
+                height = 100,
+                color = getRandomColor(),
+                velocityX = 100,
+                velocityY = 10 + Math.random() * 5,
+                gravity = 0.666
+        )
+
+        // console.log('one-x', box0.x)
+        // console.log('two-x', box1.x)
+
+        // console.log('one-width', box0.width)
+        // console.log('two-width', box1.width)
+
+        // console.log('one-sum', box0.width + box0.x)
+        // console.log('two-sum', box1.width + box1.x)
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = (ts - oldTime) * 100
+        oldTime = ts
+
+        const speed = dt * 0.443
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        isHit(box0, box1)
+
+        // if(box0.x > canvas.width - box0.width || box0.x < 0) {
+        //     box0.velocityX *= -1
+        // } else{
+        //     box0.update(speed)
+        // }
+
+        // if(box0.y > canvas.height - box0.height) {
+        //     box0.y = canvas.height - box0.height
+        //     box0.velocityY *= -1
+        //     box0.velocityY *= 0.7
+        // } 
+
+        // if(box1.x > canvas.width - box1.width || box1.x < 0) {
+        //     box1.velocityX *= -1
+        // } else{
+        //     box1.update(speed)
+        // }
+
+        // if(box1.y > canvas.height - box1.height) {
+        //     box1.y = canvas.height - box1.height
+        //     box1.velocityY *= -1
+        //     box1.velocityY *= 0.8
+        //     box0.velocityX *= -1
+        // } 
+
+        box0.render(ctx)
+        box1.render(ctx)
+
+            
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+        function getRandomColor () {
+            const r = Math.random() * 255
+            const g = Math.random() * 255
+            const b = Math.random() * 255
+            return `rgba(${r}, ${g}, ${b})`
+        }
+
+        function isHit (rectA, rectB) {
+            const isHit = !(
+                rectA.x + rectA.width < rectB.x ||
+                rectB.x + rectB.width < rectA.x ||
+                rectA.y + rectA.height < rectB.y ||
+                rectB.y + rectB.height < rectA.y
+            )
+
+            if(isHit){
+                rectA.velocityX *= -1
+                rectB.velocityX *= -1
+                rectA.velocityX += 4
+                rectB.velocityX += 6
+                test.textContent = "Lap"
+            } else {
+                test.textContent = "Nope"
+            }
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>

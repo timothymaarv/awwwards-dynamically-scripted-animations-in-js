@@ -1,0 +1,152 @@
+<!-- Base Idea:
+
+    This module covers acceleration and gravity.
+
+    Acceleration is the force that tends to affect velocity in a positive or negative direction.
+    Gravity is the invisible force that pulls objects towards the Earth.
+
+    If we have a position X and Y in the X and Y axes, these positions will both have a base value of 0 and initial velocity of 0.
+
+    Now, we introduce the acceleration and have that the velocity is equals to the multiplication of velocity and time. Plus the instanteneous velocity
+
+    We add button events listeners to control the acceleration of the object.
+
+    up => 38
+    down => 40
+    left => 37
+    right => 39
+
+    Gravity pulls the object completely down in a positive direction, hence we have to account for gravity when we define vertical motion
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        let posX = 0;
+        let posY = 0;
+
+        let velocityX = 0;
+        let velocityY = 0;
+
+        let accelerationX = 0;
+        let accelerationY = 0;
+
+        const acceleration = 0.01;
+        const gravity = 0.01;
+
+        document.addEventListener('keydown', (e) => {
+            switch(e.keyCode){
+                case 38:
+                    accelerationY -= acceleration;
+                    break;
+                case 40:
+                    accelerationY += acceleration;
+                    break;
+                case 37:
+                    accelerationX -= acceleration;
+                    break;
+                case 39:
+                    accelerationX += acceleration;
+                    break;
+                default:
+                    break;
+            }
+
+        })
+
+        document.addEventListener('keyup', () => {
+            accelerationX = 0;
+            accelerationY = 0;
+        })
+
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        const speed = 0.0003
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        velocityX += accelerationX * speed;
+
+        velocityY += accelerationY * speed;
+        velocityY += gravity * speed
+
+        posX += velocityX
+        posY += velocityY
+
+        if (posY >= canvas.height) {
+            posY = 0;
+        }
+
+        if (posX >= canvas.width) {
+            posX = 0;
+        }
+        
+        ctx.save()
+
+        ctx.translate(canvas.width / 10, canvas.height / 10)
+        ctx.beginPath()
+        ctx.rect(posX, posY, 45, 45)
+        ctx.fill()
+        ctx.closePath()
+
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>

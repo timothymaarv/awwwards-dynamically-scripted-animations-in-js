@@ -1,0 +1,92 @@
+<!-- Basic Idea:
+
+    This module introuced velocity in both x and y axis and incremented the original positions by them.
+
+    It showed that with a constant speed, we can get animations to flow in a defined manner.
+
+    It also introduced the delta time, which is a way of obtaining time with reference to the timestamp
+
+    The dt is the Time passed since last frame.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        let posX = 0
+        let posY = 0
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        ctx.save()
+
+        posX += dt * 100
+        posY += dt * 50
+
+        // ctx.translate(canvas.width, canvas.height)
+        ctx.beginPath()
+       
+        ctx.rect(posX, posY, 100, 100)
+        ctx.fill()
+        ctx.closePath()
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>

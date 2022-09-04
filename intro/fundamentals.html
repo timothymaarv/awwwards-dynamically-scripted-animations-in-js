@@ -1,0 +1,190 @@
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas Fundamentals</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+      
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width =  `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+        // canvas.style.backgroundColor = '#1199fa'
+
+        const image = new Image()
+        image.onload = () => {
+            image.src = '../assets/image.png'
+            requestAnimationFrame(drawFrame)
+        }
+        
+        const video = document.createElement('video')
+        video.onloadeddata = () => {
+            video.play()
+            video.loop = true;
+            // video.autoplay = true;
+            video.muted = true
+            requestAnimationFrame(drawFrame)
+        }
+        video.src = '../assets/video.mp4'
+
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        //Rectangles
+        // Fills & Strokes
+        // Gradients
+        // Circles
+        // Lines
+        // Paths / Bezier
+        // Text
+        // Images
+        // Videos
+        
+        const gradient = ctx.createLinearGradient(10,45, 300,50)
+        // gradient.addColorStop(0, 'green');
+        gradient.addColorStop(.5, '#1199fa');
+        gradient.addColorStop(1, 'blue');
+
+        // const color = "#1199fa"
+        const color = "black"
+        ctx.fillStyle = color //color
+        // ctx.fillStyle = gradient // gradient
+        
+        ctx.save()
+            ctx.translate(canvas.width / 4, 40)
+            // ctx.translate(image.naturalWidth, image.naturalHeight)
+            // rectangles
+            // ctx.beginPath()    
+            // ctx.fillRect(0, 0, 200, 200)
+            // ctx.closePath()
+
+            // rectangle fill
+            // ctx.beginPath()    
+            // ctx.rect(0, 0, 200, 200)
+            // ctx.fill()
+            // ctx.closePath()
+
+            // rectangle stroke
+            // ctx.beginPath()    
+            // ctx.rect(0, 0, 200, 200)
+            // ctx.stroke()
+            // ctx.closePath()
+
+            // ctx.lineWidth = 6
+
+            // gradient
+            // ctx.beginPath()    
+            // ctx.rect(0, 0, 200, 200)
+            // ctx.fill()
+            // ctx.closePath()
+
+            // Math.PI is the circumfrence of half a circle or constitutes an ARC
+            // To get a full circle it is 2 PI
+            // circle
+            // ctx.beginPath()    
+            // ctx.arc(0, 0, 200, 0, Math.PI)
+            // ctx.fill()
+            // ctx.closePath()
+
+             // circle
+            // ctx.beginPath()    
+            // ctx.arc(0, 0, 30, 0, Math.PI)
+            // ctx.stroke()
+            // ctx.closePath()
+
+             // image
+            ctx.beginPath()    
+            ctx.drawImage(video, 0, 0)
+            ctx.closePath()
+
+            ctx.scale(Math.sin(ts * 8) , 1)
+            ctx.font = "bold 60px Work Sans"
+
+            // lines
+            // ctx.beginPath()
+            // ctx.moveTo(0, 0)
+            // ctx.lineTo(0, 500)
+            // ctx.stroke()
+            // ctx.closePath()
+
+            // circle
+            // ctx.beginPath()    
+            // ctx.arc(0, 500, 30, 0, Math.PI * 2)
+            // ctx.fill()
+            // ctx.closePath()
+
+            // quadratic curve
+            // ctx.beginPath()    
+            // ctx.moveTo(0, 0)
+            // ctx.quadraticCurveTo(300, -300, 200, 300)
+            // ctx.stroke()
+            // ctx.closePath()
+
+            // bezier curve
+            // ctx.beginPath()    
+            // ctx.moveTo(0, 0)
+            // ctx.bezierCurveTo(0, 200, 200, 500, 400, 0);
+            // ctx.stroke()
+            // ctx.closePath()
+
+            // text
+            ctx.beginPath()    
+            ctx.strokeText("Hello, world", -200, 500)
+            ctx.fill()
+            ctx.closePath()
+
+            ctx.restore()
+
+           
+
+
+
+
+
+        
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,167 @@
+<!-- Base Idea:
+
+In this module, we place boxes on top of each other by highlighting one box that drops from the middle of the canvas at the top y-position.
+
+We use the hit testing methods to compare the single box with other boxes on the canvas and if there is an overlap, we increase the y-position of the highlighted box with the y + height of the box it overlaps with.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+class Rectangle {
+            constructor (
+                x,
+                y,
+                width,
+                height,
+                gravity,
+                velocity,
+                color
+            ){
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.gravity = gravity;
+                this.velocity = velocity
+                this.color = color
+            }
+
+            update (speed) {
+                this.velocity += this.gravity * speed
+                this.y += this.velocity * speed
+            }
+
+            render (ctx) {
+                ctx.fillStyle = this.color
+                ctx.beginPath()
+                ctx.fillRect(this.x, this.y, this.width, this.height)
+                ctx.closePath()
+            }
+        }
+
+        const canvas = document.getElementById('canvas')
+        
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+        
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+        
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+        
+        const ctx = canvas.getContext('2d')
+
+
+        let rects = []
+ 
+
+        let activeBox = createBox()
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        let speed = dt * 10
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        activeBox.update(speed)
+        activeBox.render(ctx)
+
+        if(activeBox.y > canvas.height - activeBox.height){
+            activeBox.y = canvas.height - activeBox.height
+            activeBox = createBox()
+        }
+
+        rects.forEach(box => {
+        if (activeBox !== box && checkHitTest(activeBox, box)) {
+          activeBox.y = box.y - activeBox.height;
+          activeBox = createBox()
+        }
+        box.render(ctx)
+
+      })
+
+        ctx.restore()
+        
+
+        requestAnimationFrame(drawFrame)
+        }
+
+
+        function getRandomColor () {
+            const r = Math.random() * 255
+            const g = Math.random() * 255
+            const b = Math.random() * 255
+            return `rgba(${r}, ${g}, ${b})`
+        }
+
+
+        function checkHitTest (rectA, rectB) {
+      const isHit = !(
+        rectA.x + rectA.width < rectB.x ||
+        rectB.x + rectB.width < rectA.x ||
+        rectA.y + rectA.height < rectB.y ||
+        rectB.y + rectB.height < rectA.y
+      )
+      return isHit
+    }
+
+      
+        function createBox() {
+            const rect = new Rectangle(
+            x = Math.random() * canvas.width,
+            y = 0,
+            width = 50 + Math.random() * 20,
+            height = 30 + Math.random() * 20,
+            gravity = 0.666,
+            velocity = 100,
+            color = getRandomColor()
+            )
+            
+            rects.push(rect)
+            return rect
+    }    
+
+    </script>
+    
+</body>
+</html>

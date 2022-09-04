@@ -1,0 +1,160 @@
+<!-- Base Idea:
+In this module, we use velocity, gravity and what we learnt about wrapping to create a fountain that regenerates objects.
+
+We put into account the velocity and increase the velocity in the positive y axis by the gravity to strengthen the pull of it.
+
+We use wrapping to place the objects back at the bottom of the canvas when they pass the bounds
+
+We initiate the objects at the middle of the canvas and increase motion from the bottom to have the fountain effect while pulling each object down with gravity
+
+We create a number generator between 1 and 255 to get the differentiating color effect
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+    const gravity = 20
+
+    class Rectangle {
+            constructor (
+                x = 0,
+                y = 0,
+                width = 20,
+                height = 20,
+                velocityX = 0,
+                velocityY = 0,
+                color = "black",
+                gravity = 0,
+            ) {
+                this.x = x;
+                this.y = y;
+                this.width = width;
+                this.height = height;
+                this.velocityX = velocityX;
+                this.velocityY = velocityY
+                this.color = color;
+                this.gravity = gravity
+            }
+
+            update (dt) {
+                this.velocityY += this.gravity * dt
+                this.x += this.velocityX * dt
+
+                this.y += this.velocityY * dt
+            }
+
+            render (ctx) {
+                ctx.beginPath()
+                ctx.fillRect(this.x, this.y, this.width, this.height)
+                ctx.closePath()
+            }
+        }
+
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        const count = 50
+        const rectangles = []
+
+        
+        for(let i = 0; i < count; i++){
+          const radius = Math.random() * 30;
+          const rectangle = new Rectangle(
+                x = canvas.width / 2,
+                y = canvas.height,
+                width = radius,
+                height = radius,
+                velocityX = (Math.random() * 2 - 1) * 50,
+                velocityY = -Math.random() * 250 + 50,
+                color = getRandomColor(),
+                gravity,
+            )
+            rectangles.push(rectangle)
+        }
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        const speed = dt * 5
+        
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        
+        rectangles.forEach((rect, i )=> {
+            ctx.fillStyle = rect.color
+            rect.update(speed)
+            rect.render(ctx)
+
+            if(rect.x > canvas.width || rect.x < -rect.width || rect.y > canvas.height || rect.y < -rect.height) {
+
+                rect.x = canvas.width / 2
+                rect.y = canvas.height
+
+                rect.velocityX = (Math.random() * 2 - 1) * 50
+                rect.velocityY = -Math.random() * 250 + 50
+            }
+        })
+            
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+
+        function getRandomColor () {
+            const r = Math.random() * 255
+            const g = Math.random() * 255
+            const b = Math.random() * 255
+            return `rgba(${r}, ${g}, ${b})`
+        }
+      
+
+    </script>
+    
+</body>
+</html>

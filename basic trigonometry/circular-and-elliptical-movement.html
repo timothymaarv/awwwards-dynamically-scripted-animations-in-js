@@ -1,0 +1,133 @@
+<!-- Base Idea: 
+
+The idea is to simulate motion by utilizing the sine wave (picture of sine wave attached) ==> 'sine-wave.jpg'
+
+Basically, the sine wave approches motion in form of a wave with limits. 
+
+There is a set limit for the base in the x-axis of the graph, an upper limit and a lower limit.
+
+The upper limit is 1 and the lower is -1.
+
+Math.sin() gives limits of -1 and 1 by default. By multiplying with figures, we can multiply the lower limits and upper limits by -1 and 1, enabling us to achieve higher wavelengths
+
+Multiplying the speed or ts increases the time passed.
+
+Math.sin(ts) gives us a base for motion
+
+We have to change radius inside the loop so that the motion varies on each render.
+
+Cosine waves allow us to as well make oscillating motion, but in the x-axis
+
+If we use the radius of another circle as the diversion(upper and lower limits), and adapt cos and sin into the movement in x and y axis of the rotating circle, we can achieve rotation around a fixed path
+
+SInce the radius changes but we set the value as the diversion, the motion will always align around the path
+
+Eqn for diversion is:
+
+radius (base path) + time factor * diversion
+
+-->
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+  
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        let time = 0;
+        
+        const sAngle = 0;
+        const eAngle = Math.PI * 2;
+        const aClockwise = false
+
+        requestAnimationFrame(drawFrame)
+        function drawFrame (ts) {
+        ts /= 1000   
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        const circleX = canvas.width / 2
+        const circleY = canvas.height / 2
+        const radius = 100 + Math.sin(ts * 2) * 99
+
+        ctx.save() 
+        
+        ctx.beginPath()    
+        ctx.lineWidth = 3
+
+        ctx.arc(circleX, circleY, radius, sAngle, eAngle, aClockwise)
+        ctx.stroke()
+        ctx.closePath()   
+        
+        ctx.fillStyle = 'orange'
+
+        const angle = ts * 3
+
+        const moveX = circleX + Math.cos(angle * Math.PI) * radius;
+        const moveY = circleY + Math.sin(angle) * radius;
+
+        ctx.beginPath()    
+        ctx.arc(moveX, moveY, 35, sAngle, eAngle, aClockwise)
+        ctx.fill()
+        ctx.closePath()  
+        
+        ctx.fillStyle = '#1199fa'
+
+        const moveX2 = circleX - Math.cos(angle * Math.PI) * radius;
+        const moveY2 = circleY - Math.sin(angle) * radius;
+
+
+        ctx.beginPath()    
+        ctx.arc(moveX2, moveY2, 35, sAngle, eAngle, aClockwise)
+        ctx.fill()
+        ctx.closePath()  
+
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+      
+    </script>
+    
+</body>
+</html>

@@ -1,0 +1,177 @@
+<!-- Base Idea:
+
+In this module, we use everything we know about following the mouse, and combine it with the circle classes with some springing action courtesy of friction.
+
+
+We are able to follow the preceeding circle with the same principles we follow the mouse with.
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        const canvas = document.getElementById('canvas')
+        
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+        
+        canvas.style.setProperty('width', CANVAS_WIDTH + 'px')
+        canvas.style.setProperty('height', CANVAS_HEIGHT + 'px')
+
+        const ctx = canvas.getContext('2d')
+
+        let oldTime = 0;
+
+       const gravity = 10
+
+        class Circle {
+            constructor (
+                x,
+                y,
+                radius,
+                color,
+            ) {
+                this.x = x;
+                this.y = y;
+                this.radius = radius;
+                this.color = color;
+
+                this.velocityX = 0;
+                this.velocityY = 0;
+                this.friction = 0.85
+                this.gravity = gravity
+            }
+
+            springTo(target, speed) {
+                const accelerationX = (target.x - this.x) * speed
+                const accelerationY = (target.y - this.y) * speed
+
+                this.velocityX += accelerationX
+                this.velocityY += accelerationY
+
+
+                this.velocityY += gravity * speed
+
+                this.velocityX *= this.friction;
+                this.velocityY *= this.friction
+
+                this.x += this.velocityX
+                this.y += this.velocityY
+            }
+
+            render(ctx) {
+                ctx.fillStyle = this.color;
+                ctx.beginPath()
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2)
+                ctx.fill()
+                ctx.closePath()
+            }
+        }
+
+        const count = 10
+        let circles = []
+
+        for(let i=0; i < count; i++){
+            const circle = new Circle (
+                x = canvas.width / 2,
+                y = canvas.height / 2,
+                r = 20 + Math.random() * 10,
+                color = getRandomColor()
+            )
+
+            circles.push(circle)
+        }
+
+
+        let movement = {
+            x: canvas.width / 2,
+            y: canvas.height / 2
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+         const mouseX = e.layerX
+         const mouseY = e.layerY
+
+         movement.x = mouseX
+         movement.y = mouseY
+        })
+
+        requestAnimationFrame(drawFrame)
+
+        function drawFrame (ts) {
+        ts /= 1000 
+        const dt = ts - oldTime
+        oldTime = ts
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        const speed = dt
+
+
+        circles.forEach((circle, i) => {
+            if(i === 0){
+                ctx.beginPath()
+                ctx.moveTo(movement.x, movement.y)
+                ctx.lineTo(circle.x, circle.y)
+            } else {
+                ctx.lineTo(circle.x, circle.y)
+            }
+            ctx.stroke()
+        }) 
+
+        circles.forEach((circle, i)=> {
+            if(i === 0){
+                circle.springTo(movement, speed)
+            } else {
+                circle.springTo(circles[i - 1], speed)
+            }
+            circle.render(ctx)
+        })
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+        function getRandomColor() {
+            const r = Math.random() * 255
+            const g = Math.random() * 255
+            const b = Math.random() * 255
+
+            return `rgba(${r}, ${g}, ${b})`
+        }
+
+    </script>
+    
+</body>
+</html>

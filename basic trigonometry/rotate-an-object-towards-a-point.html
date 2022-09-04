@@ -1,0 +1,110 @@
+<!-- Base Idea: 
+The idea for this is to simulate a graph of circular motion, where theta constitutes the center of the motion or anchor point.
+
+We can bring the circle towards us by knowing where the x and y angles meet and directing motion towards that point.
+-->
+
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+  
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        let movement = {
+            x: 0,
+            y: 0
+        }
+
+        canvas.addEventListener('mousemove', function (e) {
+            const mouseX = e.layerX
+            const mouseY = e.layerY
+            movement.x = mouseX
+            movement.y = mouseY
+        })
+
+        requestAnimationFrame(drawFrame)
+
+        function drawFrame (ts) {
+
+        ts /= 1000   
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+        
+        ctx.fillStyle = '#1199fa'
+        ctx.lineWidth = 12
+        ctx.strokeStyle = "#1199fa"
+        
+        const width = 100
+        const centerX = canvas.width / 2
+        const centerY = canvas.height / 2
+       
+        const dx =  movement.x - centerX
+        const dy =  movement.y - centerY
+        
+        const angle = Math.atan2(dy, dx)
+       
+
+        ctx.save()    
+
+            ctx.translate(centerX, centerY)
+            ctx.rotate(angle)
+            ctx.beginPath()    
+            ctx.moveTo(0, 0)
+            ctx.lineTo(-30, 0)
+            ctx.lineTo(0, -30)
+            ctx.lineTo(30, 0)
+            ctx.lineTo(0, 0)
+            ctx.fill()
+            ctx.closePath()
+
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+    </script>
+    
+</body>
+</html>

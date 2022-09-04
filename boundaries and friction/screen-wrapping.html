@@ -1,0 +1,150 @@
+<!-- Base Idea:
+
+The idea is to prevent the object from going across the bounds of the canvas.
+
+We want to achieve an effect that makes the object seem to pop out on the opposite end of the canvas once it hits a boundary.
+
+We do this by putting into consideration the width and height of the canvas in relation to the positon of the object in the screen.
+
+When it exceeds the width of the canvas in the positive x direction, it comes out of position 0 on the opposite end;
+When it is below the width of the object itself in the negative x direction, it comes out of the opposite end (the position is the width of the canvas).
+
+We do the same for x by using the canvas height and object height.
+
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Canvas</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500&display=swap" rel="stylesheet">
+
+
+    <style>
+
+        body{
+        display: grid;
+        }
+
+        #canvas {
+        place-self: center;
+        box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        -moz-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.23);
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas')
+        const ctx = canvas.getContext('2d')
+
+        const CANVAS_WIDTH = 512;
+        const CANVAS_HEIGHT = 512;
+
+        canvas.width = CANVAS_WIDTH * devicePixelRatio
+        canvas.height = CANVAS_WIDTH * devicePixelRatio
+
+        canvas.style.width = `${CANVAS_WIDTH}px`
+        canvas.style.height = `${CANVAS_HEIGHT}px`
+
+        requestAnimationFrame(drawFrame)
+
+        let oldTime = 0;
+
+        let posX = 0;
+        let posY = 0;
+
+        let velocityX = 0;
+        let velocityY = 0;
+
+        let accelerationX = 0;
+        let accelerationY = 0;
+
+        const acceleration = 1.2;
+        const gravity = 0.01;
+
+        document.addEventListener('keydown', (e) => {
+            switch(e.keyCode){
+                case 38:
+                    accelerationY -= acceleration;
+                    break;
+                case 40:
+                    accelerationY += acceleration;
+                    break;
+                case 37:
+                    accelerationX -= acceleration;
+                    break;
+                case 39:
+                    accelerationX += acceleration;
+                    break;
+                case 32:
+                    velocityX = 0.0001;
+                    velocityY = 0.0001;
+                    break;
+                default:
+                    break;
+            }
+
+        })
+
+        document.addEventListener('keyup', () => {
+            accelerationX = 0;
+            accelerationY = 0;
+        })
+
+
+        function drawFrame (ts) {
+        ts /= 1000 
+
+        const dt = ts - oldTime
+        oldTime = ts
+
+        const speed = 0.5
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height)
+
+        velocityX += accelerationX * speed;
+        velocityY += accelerationY * speed;
+
+        posX += velocityX
+        posY += velocityY
+
+
+        if (posY > canvas.height) {
+            posY = 0;
+        } else if (posY < -45) {
+            posY = canvas.height;
+        }
+
+        if (posX > canvas.width) {
+            posX = -20;
+        } else if (posX < -45) {
+            posX = canvas.width - 45
+        }
+        
+        ctx.save()
+        ctx.beginPath()
+        ctx.rect(posX, posY, 45, 45)
+        ctx.fill()
+        ctx.closePath()
+
+        ctx.restore()
+
+        requestAnimationFrame(drawFrame)
+        }
+
+      
+
+    </script>
+    
+</body>
+</html>
